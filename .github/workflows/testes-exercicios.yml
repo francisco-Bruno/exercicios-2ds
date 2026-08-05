@@ -1,0 +1,28 @@
+name: Corretor de Exercícios
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  aula01-revisao-de-objetos-no-javascript-e-introducao-ao-poo:
+    name: aula01-revisao-de-objetos-no-javascript-e-introducao-ao-poo
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 3-bimestre/orientacao-a-objetos/aula01-revisao-de-objetos-no-javascript-e-introducao-ao-poo
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: npm test
+
+  aula02-classes-constructor-e-this:
+    name: aula02-classes-constructor-e-this
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 3-bimestre/orientacao-a-objetos/aula02-classes-constructor-e-this
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: npm test
