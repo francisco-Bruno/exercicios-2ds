@@ -5,7 +5,7 @@ class Funcionarios{
         this.salario = salario
      }
 }
-const funcionarioBruno = new Funcionarios("pedro", "pedreiro", 1000)
+const funcionarioBruno = new Funcionarios("João", "Desenvolvedor", 5000)
 
 
 module.exports = funcionarioBruno
