@@ -20,3 +20,10 @@ console.log(usuario2.nome)
 console.log(usuario3.nome)
 
 console.log(Usuario.quantidadeUsuarios())
+
+module.exports = {
+    Usuario,
+    usuario1,
+    usuario2,
+    usuario3
+}
