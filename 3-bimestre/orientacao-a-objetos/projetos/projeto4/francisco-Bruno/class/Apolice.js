@@ -1,23 +1,23 @@
 class Apolice {
-    #nomeDoSegurado
-    #vigenciaEmMeses
+    #nomeDoSegurado;
+    #vigenciaEmMeses;
 
     constructor(nomeDoSegurado, vigenciaEmMeses) {
-        this.#nomeDoSegurado = nomeDoSegurado
-        this.#vigenciaEmMeses = vigenciaEmMeses
+        this.#nomeDoSegurado = nomeDoSegurado;
+        this.#vigenciaEmMeses = vigenciaEmMeses;
     }
 
     get nomeDoSegurado() {
-        return this.#nomeDoSegurado
+        return this.#nomeDoSegurado;
     }
 
     get vigenciaEmMeses() {
-        return this.#vigenciaEmMeses
+        return this.#vigenciaEmMeses;
     }
 
     resumo() {
-        return "Apólice registrada no sistema"
+        return "Apólice registrada no sistema";
     }
 }
 
-module.exports = Apolice
+module.exports = Apolice;

@@ -1,10 +1,8 @@
-const Apolice = require("./Apolice");
-
-class Vida extends Apolice {
-
-    resumo() {
-        return "Apólice de vida emitida";
+class Cobertura {
+    constructor(nome, limite) {
+        this.nome = nome
+        this.limite = limite
     }
 }
 
-module.exports = Vida;
+module.exports = Cobertura

@@ -2,13 +2,9 @@ const Automovel = require("./Automovel")
 const Residencial = require("./Residencial")
 const Vida = require("./Vida")
 
-
 class ApoliceFactory {
-
     static criar(tipo, nomeDoSegurado, vigenciaEmMeses) {
-
-        switch(tipo) {
-
+        switch (tipo) {
             case "automovel":
                 return new Automovel(nomeDoSegurado, vigenciaEmMeses)
 

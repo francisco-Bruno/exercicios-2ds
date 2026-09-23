@@ -1,16 +1,12 @@
 {
-  "name": "projeto4",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "jest": "^30.5.1"
-  }
+    "name": "projeto-seguradora-digital",
+    "version": "1.0.0",
+    "description": "Projeto 4 - Seguradora Digital",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "devDependencies": {
+        "jest": "^30.4.2"
+    }
 }
