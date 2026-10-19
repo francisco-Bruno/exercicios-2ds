@@ -538,7 +538,7 @@
         const drop = (1 - conversion) * 100;
         conversionElement.textContent =
           `${(conversion * 100).toFixed(1)}% de conversão · queda de ${drop.toFixed(1)}%`;
-        if (drop > largestDrop) {
+        if (drop > 0 && drop > largestDrop) {
           largestDrop = drop;
           largestDropIndex = index;
         }

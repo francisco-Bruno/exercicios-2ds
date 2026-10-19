@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f5ed">
+  <title>Pesquisa NPS e funil AARRR | TABELA DE NOTAS</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #328d6c;
+      --muted: #65716b;
+      --paper: #fcf9f9;
+      --surface: #faf5f5;
+      --line: #dce2d8;
+      --green: #3a2e7a;
+      --green-dark: #7e0000;
+      --lime: #4ddbff;
+      --coral: #d96a52;
+      --danger: #c62828;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 10% 10%, rgba(45, 10, 148, 0.2), transparent 28rem),
+        var(--paper);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(100% - 40px, 1050px);
+      margin: 0 auto;
+      padding: 38px 0 56px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 35px;
+      color: var(--green-dark);
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .mark {
+      display: grid;
+      width: 32px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--lime);
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      max-width: 700px;
+      margin-bottom: 30px;
+      animation: arrive .5s ease-out both;
+    }
+
+    .eyebrow {
+      margin: 0 0 9px;
+      color: var(--green);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 680px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 6vw, 3.7rem);
+      font-weight: 500;
+      line-height: 1.04;
+    }
+
+    .description {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      animation: arrive .55s ease-out both;
+    }
+
+    .funnel-panel { padding: 24px; }
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .hint {
+      margin: 7px 0 20px;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.5;
+    }
+
+    .funnel {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .funnel-step {
+      min-width: 0;
+      padding: 15px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: white;
+    }
+
+    .step-name {
+      display: block;
+      min-height: 2.6em;
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .step-count {
+      display: block;
+      margin: 8px 0;
+      color: var(--green-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .step-conversion {
+      display: block;
+      color: var(--muted);
+      font-size: .75rem;
+      line-height: 1.45;
+    }
+
+    .funnel-step.is-largest-drop {
+      border: 2px solid var(--danger);
+      color: var(--danger);
+      background: #fff5f5;
+    }
+
+    .funnel-step.is-largest-drop .step-count,
+    .funnel-step.is-largest-drop .step-conversion {
+      color: var(--danger);
+    }
+
+    .drop-label {
+      display: none;
+      margin-top: 8px;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .is-largest-drop .drop-label { display: block; }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      min-height: 46px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 5px;
+      color: white;
+      background: var(--green);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    button:hover:not(:disabled) { background: var(--green-dark); }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    button:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+
+    .status {
+      min-height: 1.3em;
+      margin: 12px 0 0;
+      color: var(--green-dark);
+      font-size: .85rem;
+      line-height: 1.45;
+    }
+
+    .status.error { color: var(--danger); }
+
+    .lower-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(270px, .8fr);
+      align-items: start;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .survey { padding: 26px; animation-delay: .08s; }
+    .results { padding: 22px; animation-delay: .16s; }
+    fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+
+    .scale {
+      display: grid;
+      grid-template-columns: repeat(11, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .score-option { position: relative; }
+
+    .score-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .score-option label {
+      display: grid;
+      min-height: 42px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: white;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 700;
+      transition: background .15s ease, border-color .15s ease, color .15s ease;
+    }
+
+    .score-option label:hover { border-color: var(--green); }
+
+    .score-option input:checked + label {
+      border-color: var(--green-dark);
+      color: white;
+      background: var(--green-dark);
+    }
+
+    .score-option input:focus-visible + label {
+      outline: 3px solid var(--lime);
+      outline-offset: 2px;
+    }
+
+    .scale-legend {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .submit { width: 100%; margin-top: 22px; }
+
+    .results-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .total {
+      color: var(--muted);
+      font-size: .8rem;
+      white-space: nowrap;
+    }
+
+    .counts { display: grid; gap: 0; margin: 5px 0 0; }
+
+    .count-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 46px;
+      border-bottom: 1px solid var(--line);
+      font-size: .9rem;
+    }
+
+    .count-label { display: flex; align-items: center; gap: 9px; }
+    .dot { width: 9px; aspect-ratio: 1; border-radius: 50%; background: var(--green); }
+    .dot.neutral { background: #d6a83d; }
+    .dot.detractor { background: var(--coral); }
+    .count-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    .nps-result {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 17px;
+    }
+
+    .nps-label { color: var(--muted); font-size: .82rem; }
+
+    .nps-value {
+      color: var(--green-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.5rem;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .footnote {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: .75rem;
+      line-height: 1.5;
+    }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 760px) {
+      main { width: min(100% - 28px, 560px); padding-top: 24px; }
+      .topline { margin-bottom: 28px; }
+      .funnel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .funnel-step:last-child { grid-column: 1 / -1; }
+      .actions { grid-template-columns: 1fr; }
+      .lower-layout { grid-template-columns: 1fr; gap: 14px; }
+      .funnel-panel { padding: 20px 16px; }
+      .survey { padding: 21px 17px; }
+      .scale { gap: 4px; }
+      .score-option label { min-height: 39px; font-size: .82rem; }
+      .results { padding: 19px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topline"><span class="mark" aria-hidden="true">N</span> Pesquisa de satisfação</div>
+
+    <header class="intro">
+      <p class="eyebrow">Sua opinião faz diferença</p>
+      <h1 id="app-title">TABELA DE NOTAS</h1>
+      <p class="description" id="app-description"></p>
+    </header>
+
+    <section class="panel funnel-panel" aria-labelledby="funnel-title">
+      <h2 id="funnel-title">Funil AARRR</h2>
+      <p class="hint">Acompanhe quantas visitas avançam em cada etapa. As conversões comparam cada etapa à anterior.</p>
+      <ol class="funnel" id="funnel-results" aria-live="polite">
+        <li class="funnel-step" data-step="acquisition">
+          <span class="step-name">Aquisição</span>
+          <strong class="step-count" id="acquisition-count">0</strong>
+          <span class="step-conversion">Aberturas da página</span>
+        </li>
+        <li class="funnel-step" data-step="activation">
+          <span class="step-name">Ativação</span>
+          <strong class="step-count" id="activation-count">0</strong>
+          <span class="step-conversion" id="activation-conversion">—</span>
+          <span class="drop-label">Maior queda</span>
+        </li>
+        <li class="funnel-step" data-step="retention">
+          <span class="step-name">Retenção</span>
+          <strong class="step-count" id="retention-count">0</strong>
+          <span class="step-conversion" id="retention-conversion">—</span>
+          <span class="drop-label">Maior queda</span>
+        </li>
+        <li class="funnel-step" data-step="revenue">
+          <span class="step-name">Receita</span>
+          <strong class="step-count" id="revenue-count">0</strong>
+          <span class="step-conversion" id="revenue-conversion">—</span>
+          <span class="drop-label">Maior queda</span>
+        </li>
+        <li class="funnel-step" data-step="recommendation">
+          <span class="step-name">Recomendação</span>
+          <strong class="step-count" id="recommendation-count">0</strong>
+          <span class="step-conversion" id="recommendation-conversion">—</span>
+          <span class="drop-label">Maior queda</span>
+        </li>
+      </ol>
+      <div class="actions" aria-label="Ações do funil">
+        <button id="try-button" type="button">Experimentar</button>
+        <button id="return-button" type="button" disabled>Quero usar de novo</button>
+        <button id="pay-button" type="button" disabled>Eu pagaria por isso</button>
+      </div>
+      <p class="status" id="funnel-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="lower-layout">
+      <section class="panel survey" aria-labelledby="question-title">
+        <form id="survey-form">
+          <fieldset>
+            <h2 id="question-title">De 0 a 10, quanto você recomendaria este app para um amigo?</h2>
+            <p class="hint">Uma nota 9 ou 10 conta como recomendação no funil.</p>
+            <div class="scale" id="score-scale" aria-label="Notas de 0 a 10"></div>
+            <div class="scale-legend" aria-hidden="true">
+              <span>Não recomendaria</span>
+              <span>Recomendaria com certeza</span>
+            </div>
+          </fieldset>
+          <button class="submit" type="submit">Enviar resposta</button>
+          <p class="status" id="status-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel results" aria-labelledby="results-title">
+        <div class="results-heading">
+          <h2 id="results-title">Resultado NPS</h2>
+          <span class="total" id="total-responses">0 respostas</span>
+        </div>
+        <div class="counts" aria-live="polite">
+          <div class="count-row"><span class="count-label"><span class="dot" aria-hidden="true"></span>Promotores</span><span class="count-value" id="promoters">0</span></div>
+          <div class="count-row"><span class="count-label"><span class="dot neutral" aria-hidden="true"></span>Neutros</span><span class="count-value" id="neutrals">0</span></div>
+          <div class="count-row"><span class="count-label"><span class="dot detractor" aria-hidden="true"></span>Detratores</span><span class="count-value" id="detractors">0</span></div>
+        </div>
+        <div class="nps-result">
+          <span class="nps-label">NPS final</span>
+          <strong class="nps-value" id="nps-value">—</strong>
+        </div>
+        <p class="footnote">NPS = percentual de promotores menos percentual de detratores.</p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const APP_NAME = "TABELA DE NOTAS";
+    const RESPONSES_KEY = "pesquisa-nps-respostas";
+    const FUNNEL_KEY = "aarrr-funil-sessoes";
+    const form = document.querySelector("#survey-form");
+    const scoreScale = document.querySelector("#score-scale");
+    const statusMessage = document.querySelector("#status-message");
+    const funnelStatus = document.querySelector("#funnel-status");
+    const tryButton = document.querySelector("#try-button");
+    const returnButton = document.querySelector("#return-button");
+    const payButton = document.querySelector("#pay-button");
+    const stepNames = ["acquisition", "activation", "retention", "revenue", "recommendation"];
+    const countIds = ["acquisition-count", "activation-count", "retention-count", "revenue-count", "recommendation-count"];
+    const conversionIds = ["activation-conversion", "retention-conversion", "revenue-conversion", "recommendation-conversion"];
+    let responses = [];
+    let sessionId = "";
+    let storageReady = false;
+
+    document.title = `Pesquisa NPS e funil AARRR | ${APP_NAME}`;
+    document.querySelector("#app-title").textContent = APP_NAME;
+    document.querySelector("#app-description").textContent =
+      `O ${APP_NAME} foi pensado para deixar seu dia a dia mais simples.`;
+
+    for (let score = 0; score <= 10; score += 1) {
+      const option = document.createElement("div");
+      option.className = "score-option";
+      option.innerHTML = `<input id="score-${score}" name="score" type="radio" value="${score}" required><label for="score-${score}">${score}</label>`;
+      scoreScale.append(option);
+    }
+
+    function readArray(key, isValidItem) {
+      const raw = localStorage.getItem(key);
+      if (raw === null) return [];
+      const stored = JSON.parse(raw);
+      if (!Array.isArray(stored) || !stored.every(isValidItem)) {
+        throw new Error(`Os dados salvos em "${key}" estão inválidos.`);
+      }
+      return stored;
+    }
+
+    function isValidSession(session) {
+      return session !== null && typeof session === "object" &&
+        typeof session.id === "string" &&
+        stepNames.every((step) => step === "acquisition" || typeof session[step] === "boolean");
+    }
+
+    function showError(message) {
+      statusMessage.textContent = message;
+      statusMessage.classList.add("error");
+      funnelStatus.textContent = message;
+      funnelStatus.classList.add("error");
+    }
+
+    function updateNpsResults() {
+      const promoters = responses.filter((score) => score >= 9).length;
+      const neutrals = responses.filter((score) => score >= 7 && score <= 8).length;
+      const detractors = responses.filter((score) => score <= 6).length;
+      const total = responses.length;
+      document.querySelector("#promoters").textContent = promoters;
+      document.querySelector("#neutrals").textContent = neutrals;
+      document.querySelector("#detractors").textContent = detractors;
+      document.querySelector("#total-responses").textContent =
+        `${total} ${total === 1 ? "resposta" : "respostas"}`;
+      const nps = Math.round(((promoters - detractors) / total) * 100);
+      document.querySelector("#nps-value").textContent = total
+        ? `${nps > 0 ? "+" : ""}${nps}`
+        : "—";
+    }
+
+    function updateFunnel() {
+      const sessions = readArray(FUNNEL_KEY, isValidSession);
+      const counts = stepNames.map((step) =>
+        step === "acquisition"
+          ? sessions.length
+          : sessions.filter((session) => session[step]).length
+      );
+
+      counts.forEach((count, index) => {
+        document.querySelector(`#${countIds[index]}`).textContent = count;
+      });
+
+      let largestDropIndex = -1;
+      let largestDrop = -1;
+      for (let index = 1; index < counts.length; index += 1) {
+        const conversion = counts[index - 1] === 0 ? null : counts[index] / counts[index - 1];
+        const conversionElement = document.querySelector(`#${conversionIds[index - 1]}`);
+        if (conversion === null) {
+          conversionElement.textContent = "Sem dados para calcular";
+          continue;
+        }
+        const drop = (1 - conversion) * 100;
+        conversionElement.textContent =
+          `${(conversion * 100).toFixed(1)}% de conversão · queda de ${drop.toFixed(1)}%`;
+        if (drop > 0 && drop > largestDrop) {
+          largestDrop = drop;
+          largestDropIndex = index;
+        }
+      }
+
+      document.querySelectorAll(".funnel-step").forEach((element, index) => {
+        element.classList.toggle("is-largest-drop", index === largestDropIndex);
+      });
+
+      const currentSession = sessions.find((session) => session.id === sessionId);
+      if (!currentSession) throw new Error("A visita atual não foi encontrada no funil salvo.");
+      tryButton.disabled = currentSession.activation;
+      returnButton.disabled = !currentSession.activation || currentSession.retention;
+      payButton.disabled = !currentSession.retention || currentSession.revenue;
+    }
+
+    function updateSession(step, message) {
+      try {
+        const sessions = readArray(FUNNEL_KEY, isValidSession);
+        const sessionIndex = sessions.findIndex((session) => session.id === sessionId);
+        if (sessionIndex === -1) throw new Error("A visita atual não foi encontrada no funil salvo.");
+        const updatedSessions = [...sessions];
+        updatedSessions[sessionIndex] = { ...sessions[sessionIndex], [step]: true };
+        localStorage.setItem(FUNNEL_KEY, JSON.stringify(updatedSessions));
+        updateFunnel();
+        funnelStatus.textContent = message;
+        funnelStatus.classList.remove("error");
+      } catch (error) {
+        showError(`Não foi possível salvar o funil: ${error.message}`);
+      }
+    }
+
+    function initialize() {
+      try {
+        responses = readArray(
+          RESPONSES_KEY,
+          (score) => Number.isInteger(score) && score >= 0 && score <= 10
+        );
+        const sessions = readArray(FUNNEL_KEY, isValidSession);
+        sessionId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        sessions.push({
+          id: sessionId,
+          activation: false,
+          retention: false,
+          revenue: false,
+          recommendation: false
+        });
+        localStorage.setItem(FUNNEL_KEY, JSON.stringify(sessions));
+        storageReady = true;
+        updateNpsResults();
+        updateFunnel();
+      } catch (error) {
+        showError(`Não foi possível iniciar as métricas salvas: ${error.message}`);
+        form.querySelector("button[type=submit]").disabled = true;
+        tryButton.disabled = true;
+        returnButton.disabled = true;
+        payButton.disabled = true;
+      }
+    }
+
+    tryButton.addEventListener("click", () => {
+      updateSession("activation", "Ativação registrada. Agora você pode escolher se voltaria a usar.");
+    });
+
+    returnButton.addEventListener("click", () => {
+      updateSession("retention", "Retenção registrada. Você já pode responder se pagaria pelo app.");
+    });
+
+    payButton.addEventListener("click", () => {
+      updateSession("revenue", "Receita registrada. Dê sua nota no NPS para concluir o funil.");
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!storageReady) return;
+      const selectedScore = new FormData(form).get("score");
+      if (selectedScore === null) return;
+      const score = Number(selectedScore);
+
+      try {
+        const updatedResponses = [...readArray(
+          RESPONSES_KEY,
+          (storedScore) => Number.isInteger(storedScore) && storedScore >= 0 && storedScore <= 10
+        ), score];
+        localStorage.setItem(RESPONSES_KEY, JSON.stringify(updatedResponses));
+        responses = updatedResponses;
+        form.reset();
+        statusMessage.classList.remove("error");
+        updateNpsResults();
+
+        const sessions = readArray(FUNNEL_KEY, isValidSession);
+        const sessionIndex = sessions.findIndex((session) => session.id === sessionId);
+        if (sessionIndex === -1) throw new Error("A visita atual não foi encontrada no funil salvo.");
+        if (score >= 9 && sessions[sessionIndex].revenue && !sessions[sessionIndex].recommendation) {
+          const updatedSessions = [...sessions];
+          updatedSessions[sessionIndex] = { ...sessions[sessionIndex], recommendation: true };
+          localStorage.setItem(FUNNEL_KEY, JSON.stringify(updatedSessions));
+          updateFunnel();
+          funnelStatus.textContent = "Recomendação registrada no funil. Obrigado!";
+          funnelStatus.classList.remove("error");
+          statusMessage.textContent = "Resposta registrada. Você avançou para recomendação. Obrigado!";
+        } else if (score >= 9 && !sessions[sessionIndex].revenue) {
+          statusMessage.textContent =
+            "Resposta registrada. Para contar como recomendação no funil, conclua as etapas anteriores e dê nota 9 ou 10.";
+        } else {
+          statusMessage.textContent = "Resposta registrada. Obrigado por participar!";
+        }
+      } catch (error) {
+        showError(`Não foi possível salvar sua resposta: ${error.message}`);
+      }
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === FUNNEL_KEY || event.key === RESPONSES_KEY) {
+        try {
+          if (event.key === FUNNEL_KEY) updateFunnel();
+          if (event.key === RESPONSES_KEY) {
+            responses = readArray(
+              RESPONSES_KEY,
+              (score) => Number.isInteger(score) && score >= 0 && score <= 10
+            );
+            updateNpsResults();
+          }
+        } catch (error) {
+          showError(`Não foi possível atualizar as métricas: ${error.message}`);
+        }
+      }
+    });
+
+    initialize();
+  </script>
+</body>
+</html>
