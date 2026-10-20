@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>Funil AARRR | Trocaê</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202b27;
+      --muted: #63716a;
+      --paper: #f5f3ed;
+      --surface: #fffefa;
+      --line: #d9ded5;
+      --green: #176b54;
+      --green-dark: #10523f;
+      --lime: #d9ed8c;
+      --red: #b42318;
+      --red-pale: #fff0ed;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background-color: var(--paper);
+      background-image: radial-gradient(#cbd2c5 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    main { width: min(100% - 32px, 920px); margin: 0 auto; padding: 38px 0 48px; }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      color: var(--green-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mark {
+      display: grid;
+      width: 34px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--lime);
+      font-size: 1.2rem;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-weight: 500;
+      line-height: 0.98;
+    }
+
+    .intro { max-width: 620px; margin: 16px 0 28px; color: var(--muted); font-size: 1.05rem; line-height: 1.6; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr); gap: 18px; align-items: start; }
+
+    .journey, .funnel { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .journey { padding: clamp(20px, 4vw, 30px); }
+
+    .journey-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+    .journey-top h2, .funnel-heading h2 { margin: 0; font-size: 1.15rem; }
+
+    .step-counter { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+
+    .progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 26px; }
+    .progress span { height: 5px; border-radius: 5px; background: #e5e8e0; }
+    .progress span.done { background: var(--green); }
+
+    .stage-tag { margin: 0 0 10px; color: var(--green); font-size: 0.75rem; font-weight: 850; letter-spacing: 0.09em; text-transform: uppercase; }
+    .stage h3 { margin: 0 0 10px; font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; font-weight: 500; }
+    .stage p { margin: 0 0 22px; color: var(--muted); line-height: 1.55; }
+
+    .action-button, .score-submit, .reset-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+    }
+
+    .action-button, .score-submit { padding: 0 18px; background: var(--green); color: white; }
+    .action-button:hover, .score-submit:hover { background: var(--green-dark); }
+    .action-button:focus-visible, .score-submit:focus-visible, .reset-button:focus-visible, .score-choice:focus-visible { outline: 3px solid #81ad89; outline-offset: 3px; }
+
+    .score-picker { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 5px; margin: 0 0 10px; }
+
+    .score-choice {
+      min-width: 0;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: white;
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+    }
+
+    .score-choice:hover { border-color: var(--green); }
+    .score-choice[aria-pressed="true"] { border-color: var(--green); background: var(--green); color: white; }
+    .score-ends { display: flex; justify-content: space-between; margin-bottom: 18px; color: var(--muted); font-size: 0.75rem; }
+    .score-submit:disabled { cursor: not-allowed; opacity: 0.45; }
+    .complete-message { padding: 13px 14px; border-left: 3px solid var(--green); background: #f1f6ed; color: var(--green-dark); font-weight: 700; line-height: 1.5; }
+
+    .funnel { padding: clamp(20px, 4vw, 26px); }
+    .funnel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+    .participant-count { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+
+    .stage-list { display: grid; gap: 8px; }
+
+    .funnel-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 4px 12px;
+      padding: 12px;
+      border-left: 3px solid transparent;
+      background: #f7f7f2;
+    }
+
+    .funnel-stage.is-drop { border-left-color: var(--red); background: var(--red-pale); }
+    .funnel-stage.is-drop .stage-count, .funnel-stage.is-drop .stage-conversion { color: var(--red); }
+    .stage-name { min-width: 0; font-size: 0.9rem; font-weight: 750; }
+    .stage-count { font-size: 1rem; font-weight: 850; text-align: right; }
+    .stage-conversion { grid-column: 1 / -1; color: var(--muted); font-size: 0.76rem; }
+
+    .drop-note { min-height: 43px; margin: 14px 0 0; color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+    .drop-note strong { color: var(--red); }
+
+    .funnel-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .storage-note { margin: 0; color: var(--muted); font-size: 0.75rem; line-height: 1.4; }
+    .reset-button { flex: 0 0 auto; min-height: 36px; padding: 0 10px; background: transparent; color: var(--muted); font-size: 0.78rem; }
+    .reset-button:hover { background: #f0eee8; color: var(--ink); }
+
+    @media (max-width: 720px) {
+      main { padding-top: 28px; }
+      .layout { grid-template-columns: 1fr; }
+      .funnel { order: 2; }
+    }
+
+    @media (max-width: 430px) {
+      .score-picker { gap: 3px; }
+      .score-choice { min-height: 36px; font-size: 0.86rem; }
+      .journey-top { align-items: flex-start; }
+      .participant-count { white-space: normal; text-align: right; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topline"><span class="mark" aria-hidden="true">↗</span> Funil de crescimento</div>
+    <h1>Uma boa troca começa com um clique.</h1>
+    <p class="intro"><strong>Trocaê</strong> conecta leitores da comunidade para trocar livros que já terminaram por novas histórias. Acompanhe o caminho de cada pessoa pelo app.</p>
+
+    <div class="layout">
+      <section class="journey" aria-labelledby="journey-title">
+        <div class="journey-top">
+          <h2 id="journey-title">Sua jornada</h2>
+          <span class="step-counter" id="step-counter"></span>
+        </div>
+        <div class="progress" id="progress" aria-hidden="true"></div>
+        <div class="stage" id="stage" aria-live="polite"></div>
+      </section>
+
+      <section class="funnel" aria-labelledby="funnel-title">
+        <div class="funnel-heading">
+          <h2 id="funnel-title">Funil AARRR</h2>
+          <span class="participant-count" id="participant-count"></span>
+        </div>
+        <div class="stage-list" id="stage-list" aria-live="polite"></div>
+        <p class="drop-note" id="drop-note"></p>
+        <div class="funnel-footer">
+          <p class="storage-note">Dados salvos neste navegador.</p>
+          <button class="reset-button" id="reset-button" type="button">Zerar dados</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const storageKey = "trocae-aarrr-jornadas-v1";
+    const stageNames = ["Aquisição", "Ativação", "Retenção", "Receita", "Recomendação"];
+    const stageActions = ["Experimentar", "Quero usar de novo", "Eu pagaria por isso"];
+    const stage = document.querySelector("#stage");
+    const stageList = document.querySelector("#stage-list");
+
+    function loadJourneys() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(saved) ? saved.filter((journey) => journey && typeof journey === "object") : [];
+      } catch {
+        return [];
+      }
+    }
+
+    let journeys = loadJourneys();
+    let currentJourney = { activated: false, retained: false, revenue: false, score: null };
+    journeys.push(currentJourney);
+
+    function saveJourneys() {
+      localStorage.setItem(storageKey, JSON.stringify(journeys));
+    }
+
+    function getCounts() {
+      return [
+        journeys.length,
+        journeys.filter((journey) => journey.activated).length,
+        journeys.filter((journey) => journey.retained).length,
+        journeys.filter((journey) => journey.revenue).length,
+        journeys.filter((journey) => journey.score >= 9).length
+      ];
+    }
+
+    function renderFunnel() {
+      const counts = getCounts();
+      const transitions = counts.slice(1).map((count, index) => ({
+        from: index,
+        to: index + 1,
+        conversion: counts[index] ? count / counts[index] * 100 : null
+      }));
+      const measuredTransitions = transitions.filter((transition) => transition.conversion !== null);
+      const largestDrop = measuredTransitions.reduce((largest, transition) => {
+        const drop = 100 - transition.conversion;
+        return !largest || drop > largest.drop ? { ...transition, drop } : largest;
+      }, null);
+
+      document.querySelector("#participant-count").textContent = `${counts[0]} ${counts[0] === 1 ? "participante" : "participantes"}`;
+      stageList.innerHTML = stageNames.map((name, index) => {
+        const transition = transitions[index - 1];
+        const conversion = index === 0
+          ? "Entrada no app"
+          : transition.conversion === null
+            ? `Conversão desde ${stageNames[index - 1]}: —`
+            : `Conversão desde ${stageNames[index - 1]}: ${transition.conversion.toFixed(0)}%`;
+        const isLargestDrop = largestDrop && largestDrop.to === index && largestDrop.drop > 0;
+        return `<div class="funnel-stage${isLargestDrop ? " is-drop" : ""}">
+          <span class="stage-name">${name}</span>
+          <strong class="stage-count">${counts[index]}</strong>
+          <span class="stage-conversion">${conversion}</span>
+        </div>`;
+      }).join("");
+
+      const dropNote = document.querySelector("#drop-note");
+      if (!largestDrop) {
+        dropNote.textContent = "Ainda não há participantes suficientes para calcular as conversões.";
+      } else {
+        dropNote.innerHTML = largestDrop.drop > 0
+          ? `<strong>Maior queda:</strong> ${stageNames[largestDrop.from]} → ${stageNames[largestDrop.to]}, ${largestDrop.drop.toFixed(0)}% não avançaram.`
+          : "Nenhuma queda entre etapas até agora.";
+      }
+    }
+
+    function currentStep() {
+      if (!currentJourney.activated) return 0;
+      if (!currentJourney.retained) return 1;
+      if (!currentJourney.revenue) return 2;
+      if (currentJourney.score === null) return 3;
+      return 4;
+    }
+
+    function renderJourney() {
+      const step = currentStep();
+      const progress = document.querySelector("#progress");
+      progress.innerHTML = stageNames.map((_, index) => `<span class="${index <= step ? "done" : ""}"></span>`).join("");
+      document.querySelector("#step-counter").textContent = step === 4 ? "Jornada concluída" : `Etapa ${step + 1} de 5`;
+
+      if (step === 4) {
+        const isPromoter = currentJourney.score >= 9;
+        stage.innerHTML = `<p class="stage-tag">${stageNames[4]}</p>
+          <h3>Obrigado por participar.</h3>
+          <p>Sua nota foi ${currentJourney.score}. ${isPromoter ? "Você entrou na etapa de recomendação." : "A etapa de recomendação conta apenas notas 9 ou 10."}</p>
+          <div class="complete-message">Sua resposta foi registrada. As contagens do funil são atualizadas automaticamente.</div>`;
+        return;
+      }
+
+      if (step < 3) {
+        const descriptions = [
+          "Veja como funciona a troca de livros entre leitores da sua comunidade.",
+          "Você já experimentou. Voltaria ao Trocaê para fazer outra troca?",
+          "Imagine que encontrou outro livro interessante. Você pagaria por uma troca segura e organizada?"
+        ];
+        stage.innerHTML = `<p class="stage-tag">${stageNames[step]}</p>
+          <h3>${step === 0 ? "Descubra o Trocaê." : stageNames[step]}</h3>
+          <p>${descriptions[step]}</p>
+          <button class="action-button" type="button" data-action="advance">${stageActions[step]}</button>`;
+        return;
+      }
+
+      stage.innerHTML = `<p class="stage-tag">${stageNames[4]}</p>
+        <h3>Você recomendaria o Trocaê?</h3>
+        <p>De 0 a 10, qual a chance de recomendar este app para um amigo? Só notas 9 e 10 contam como recomendação no funil.</p>
+        <div class="score-picker" role="group" aria-label="Escolha uma nota de 0 a 10">
+          ${Array.from({ length: 11 }, (_, score) => `<button class="score-choice" type="button" data-score="${score}" aria-pressed="${selectedScore === score}">${score}</button>`).join("")}
+        </div>
+        <div class="score-ends"><span>Nada provável</span><span>Muito provável</span></div>
+        <button class="score-submit" type="button" data-action="submit-score" ${selectedScore === null ? "disabled" : ""}>Enviar nota</button>`;
+    }
+
+    let selectedScore = null;
+
+    stage.addEventListener("click", (event) => {
+      const scoreButton = event.target.closest("[data-score]");
+      if (scoreButton) {
+        selectedScore = Number(scoreButton.dataset.score);
+        renderJourney();
+        return;
+      }
+
+      const action = event.target.closest("[data-action]")?.dataset.action;
+      if (action === "advance") {
+        if (!currentJourney.activated) currentJourney.activated = true;
+        else if (!currentJourney.retained) currentJourney.retained = true;
+        else if (!currentJourney.revenue) currentJourney.revenue = true;
+        saveJourneys();
+        renderJourney();
+        renderFunnel();
+      }
+
+      if (action === "submit-score" && selectedScore !== null) {
+        currentJourney.score = selectedScore;
+        saveJourneys();
+        renderJourney();
+        renderFunnel();
+      }
+    });
+
+    document.querySelector("#reset-button").addEventListener("click", () => {
+      if (!window.confirm("Zerar todas as jornadas salvas neste navegador?")) return;
+      currentJourney = { activated: false, retained: false, revenue: false, score: null };
+      selectedScore = null;
+      journeys = [currentJourney];
+      saveJourneys();
+      renderJourney();
+      renderFunnel();
+    });
+
+    saveJourneys();
+    renderJourney();
+    renderFunnel();
+  </script>
+</body>
+</html>

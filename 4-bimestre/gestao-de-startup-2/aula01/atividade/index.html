@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>Pesquisa NPS | Trocaê</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202b27;
+      --muted: #63716a;
+      --paper: #f5f3ed;
+      --surface: #ffffff;
+      --line: #d9ded5;
+      --green: #176b54;
+      --green-dark: #10523f;
+      --lime: #d9ed8c;
+      --red: #b85d51;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background-color: var(--paper);
+      background-image: radial-gradient(#cbd2c5 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(100% - 32px, 760px);
+      margin: 0 auto;
+      padding: 48px 0 40px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      color: var(--green-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mark {
+      display: grid;
+      width: 34px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--lime);
+      font-size: 1.2rem;
+    }
+
+    h1 {
+      max-width: 650px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.4rem, 8vw, 4.4rem);
+      font-weight: 500;
+      line-height: 0.98;
+    }
+
+    .intro {
+      max-width: 590px;
+      margin: 18px 0 32px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .survey, .results {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .survey { padding: clamp(20px, 5vw, 34px); }
+
+    fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+
+    legend {
+      margin-bottom: 20px;
+      font-size: 1.15rem;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .scale {
+      display: grid;
+      grid-template-columns: repeat(11, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .score-option { position: relative; }
+
+    .score-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .score-option label {
+      display: grid;
+      min-height: 48px;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+      cursor: pointer;
+      font-weight: 800;
+      transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+    }
+
+    .score-option label:hover { border-color: var(--green); transform: translateY(-2px); }
+    .score-option input:focus-visible + label { outline: 3px solid #81ad89; outline-offset: 3px; }
+    .score-option input:checked + label { border-color: var(--green); background: var(--green); color: white; }
+
+    .scale-caption {
+      display: flex;
+      justify-content: space-between;
+      margin: 9px 0 22px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .submit-button, .clear-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+    }
+
+    .submit-button {
+      width: 100%;
+      background: var(--green);
+      color: white;
+    }
+
+    .submit-button:hover { background: var(--green-dark); }
+    .submit-button:focus-visible, .clear-button:focus-visible { outline: 3px solid #81ad89; outline-offset: 3px; }
+
+    .results { margin-top: 22px; padding: clamp(20px, 5vw, 30px); }
+
+    .results-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    h2 { margin: 0; font-size: 1.2rem; }
+
+    .response-total { color: var(--muted); font-size: 0.9rem; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      min-width: 0;
+      padding: 14px;
+      border-left: 3px solid var(--line);
+      background: #f7f7f2;
+    }
+
+    .metric.promoters { border-color: var(--green); }
+    .metric.passives { border-color: #d1a72f; }
+    .metric.detractors { border-color: var(--red); }
+
+    .metric strong { display: block; font-size: 1.65rem; }
+    .metric span { color: var(--muted); font-size: 0.84rem; }
+
+    .nps-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 17px;
+      border-top: 1px solid var(--line);
+    }
+
+    .nps-label { font-weight: 750; }
+    .nps-value { color: var(--green-dark); font-size: 2rem; font-weight: 850; }
+
+    .results-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .storage-note { margin: 0; color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+
+    .clear-button {
+      flex: 0 0 auto;
+      padding: 0 12px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .clear-button:hover { background: #f0eee8; color: var(--ink); }
+
+    @media (max-width: 520px) {
+      main { padding-top: 30px; }
+      .scale { gap: 4px; }
+      .score-option label { min-height: 0; border-radius: 5px; font-size: 0.9rem; }
+      .metrics { gap: 6px; }
+      .metric { padding: 10px 8px; }
+      .metric span { font-size: 0.72rem; }
+      .results-footer { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topline"><span class="mark" aria-hidden="true">↗</span> Pesquisa rápida</div>
+    <h1>Livros bons merecem circular.</h1>
+    <p class="intro"><strong>Trocaê</strong> conecta leitores da comunidade para trocar livros que já terminaram por novas histórias.</p>
+
+    <form class="survey" id="survey-form">
+      <fieldset>
+        <legend>De 0 a 10, quanto você recomendaria este app para um amigo?</legend>
+        <div class="scale" role="radiogroup" aria-label="Sua nota de recomendação">
+          <div class="score-option"><input id="score-0" type="radio" name="score" value="0" required><label for="score-0">0</label></div>
+          <div class="score-option"><input id="score-1" type="radio" name="score" value="1"><label for="score-1">1</label></div>
+          <div class="score-option"><input id="score-2" type="radio" name="score" value="2"><label for="score-2">2</label></div>
+          <div class="score-option"><input id="score-3" type="radio" name="score" value="3"><label for="score-3">3</label></div>
+          <div class="score-option"><input id="score-4" type="radio" name="score" value="4"><label for="score-4">4</label></div>
+          <div class="score-option"><input id="score-5" type="radio" name="score" value="5"><label for="score-5">5</label></div>
+          <div class="score-option"><input id="score-6" type="radio" name="score" value="6"><label for="score-6">6</label></div>
+          <div class="score-option"><input id="score-7" type="radio" name="score" value="7"><label for="score-7">7</label></div>
+          <div class="score-option"><input id="score-8" type="radio" name="score" value="8"><label for="score-8">8</label></div>
+          <div class="score-option"><input id="score-9" type="radio" name="score" value="9"><label for="score-9">9</label></div>
+          <div class="score-option"><input id="score-10" type="radio" name="score" value="10"><label for="score-10">10</label></div>
+        </div>
+        <div class="scale-caption"><span>Nada provável</span><span>Muito provável</span></div>
+      </fieldset>
+      <button class="submit-button" type="submit">Enviar resposta</button>
+    </form>
+
+    <section class="results" aria-labelledby="results-title" aria-live="polite">
+      <div class="results-heading">
+        <h2 id="results-title">Resultado da pesquisa</h2>
+        <span class="response-total" id="response-total">0 respostas</span>
+      </div>
+      <div class="metrics">
+        <div class="metric promoters"><strong id="promoters">0</strong><span>Promotores · notas 9 e 10</span></div>
+        <div class="metric passives"><strong id="passives">0</strong><span>Neutros · notas 7 e 8</span></div>
+        <div class="metric detractors"><strong id="detractors">0</strong><span>Detratores · notas 0 a 6</span></div>
+      </div>
+      <div class="nps-row"><span class="nps-label">NPS final</span><strong class="nps-value" id="nps">—</strong></div>
+      <div class="results-footer">
+        <p class="storage-note">As respostas ficam salvas neste navegador.</p>
+        <button class="clear-button" id="clear-button" type="button">Limpar respostas</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = "trocae-nps-respostas";
+    const form = document.querySelector("#survey-form");
+
+    function loadResponses() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(saved) ? saved.filter((score) => Number.isInteger(score) && score >= 0 && score <= 10) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    let responses = loadResponses();
+
+    function renderResults() {
+      const promoters = responses.filter((score) => score >= 9).length;
+      const passives = responses.filter((score) => score >= 7 && score <= 8).length;
+      const detractors = responses.filter((score) => score <= 6).length;
+      const total = responses.length;
+
+      document.querySelector("#promoters").textContent = promoters;
+      document.querySelector("#passives").textContent = passives;
+      document.querySelector("#detractors").textContent = detractors;
+      document.querySelector("#response-total").textContent = `${total} ${total === 1 ? "resposta" : "respostas"}`;
+      document.querySelector("#nps").textContent = total
+        ? Math.round((promoters / total - detractors / total) * 100)
+        : "—";
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const selectedScore = new FormData(form).get("score");
+      if (selectedScore === null) return;
+
+      responses.push(Number(selectedScore));
+      localStorage.setItem(storageKey, JSON.stringify(responses));
+      form.reset();
+      renderResults();
+    });
+
+    document.querySelector("#clear-button").addEventListener("click", () => {
+      if (!responses.length || !window.confirm("Apagar todas as respostas salvas neste navegador?")) return;
+      responses = [];
+      localStorage.removeItem(storageKey);
+      renderResults();
+    });
+
+    renderResults();
+  </script>
+</body>
+</html>
