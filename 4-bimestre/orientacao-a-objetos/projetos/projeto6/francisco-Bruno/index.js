@@ -1,14 +1,12 @@
+
 const express = require("express")
-const brinquedosRouter = require("./brinquedos")
-const responsaveisRouter = require("./responsaveis")
 
-const router = express.Router()
+const app = express()
 
-router.get("/", (req, res) => {
-  res.json({ mensagem: "API de Brinquedoteca" })
-});
+const routerPrincipal = require("./routes")
 
-router.use("/brinquedos", brinquedosRouter)
-router.use("/responsaveis", responsaveisRouter)
+app.use(express.json())
 
-module.exports = router
+app.use("/api", routerPrincipal)
+
+module.exports = app
