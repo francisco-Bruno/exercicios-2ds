@@ -1,4 +1,3 @@
-
 const express = require("express")
 
 const app = express()
@@ -17,7 +16,9 @@ const livros = [
 ]
 
 app.get("/", (req, res) => {
-    res.json({ mensagem: "API de Livros" })
+    res.json({
+        mensagem: "API de Livros"
+    })
 })
 
 app.get("/livros", (req, res) => {
@@ -25,11 +26,15 @@ app.get("/livros", (req, res) => {
 })
 
 app.get("/livros/total", (req, res) => {
-    res.json({ total: livros.length })
+    res.json({
+        total: livros.length
+    })
 })
 
 app.post("/livros", (req, res) => {
-    res.status(201).json({ mensagem: "Livro criado" })
+    res.status(201).json({
+        mensagem: "Livro criado"
+    })
 })
 
 module.exports = app
