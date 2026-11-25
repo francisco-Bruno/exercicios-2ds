@@ -1,69 +1,73 @@
-const repositorio = require('../repositorio')
+
+const Alugueis = require('../alugueis')
+const Repositorio = require('../repositorio')
 const fs = require('fs/promises')
 
 const arquivo = './alugueis-teste.json'
 
-beforeEach(async () => {
-    process.env.ARQUIVO_ALUGUEIS = arquivo
+describe('Sistema de aluguéis', () => {
+  let sistema
 
-    try {
-        await fs.unlink(arquivo)
-    } catch (erro) {
-        if (erro.code !== 'ENOENT') throw erro
-    }
-})
+  beforeEach(async () => {
+    sistema = new Alugueis(new Repositorio(arquivo))
+    await fs.writeFile(arquivo, '[]')
+  })
 
-afterAll(async () => {
-    try {
-        await fs.unlink(arquivo)
-    } catch (erro) {
-        if (erro.code !== 'ENOENT') throw erro
-    }
-})
+  afterAll(async () => {
+    await fs.rm(arquivo, { force: true })
+  })
 
-test('deve listar os alugueis', async () => {
-    expect(await repositorio.listar()).toEqual([])
-})
-
-test('deve salvar um aluguel', async () => {
-    const aluguel = {
-        id: 1,
-        assinante: 'Ana',
-        jogo: 'Celeste',
-        dias: 5,
-        situacao: 'reservado'
-    }
-
-    const resultado = await repositorio.salvar(aluguel)
-
-    expect(resultado).toEqual(aluguel)
-})
-
-test('deve atualizar um aluguel', async () => {
-    await repositorio.salvar({
-        id: 1,
-        assinante: 'Ana',
-        jogo: 'Celeste',
-        dias: 5,
-        situacao: 'reservado'
+  test('deve cadastrar um aluguel', async () => {
+    const resultado = await sistema.cadastrar({
+      cliente: 'Maria',
+      imovel: 'Apartamento 01',
+      valor: 1000
     })
 
-    const resultado = await repositorio.atualizar(1, {
-        situacao: 'finalizado'
+    expect(resultado.cliente).toBe('Maria')
+    expect(resultado.imovel).toBe('Apartamento 01')
+  })
+
+  test('deve listar os aluguéis', async () => {
+    await sistema.cadastrar({
+      cliente: 'João',
+      imovel: 'Casa 02',
+      valor: 1500
     })
 
-    expect(resultado.situacao).toBe('finalizado')
-    expect(resultado.assinante).toBe('Ana')
-})
+    const resultado = await sistema.listar()
 
-test('deve remover um aluguel', async () => {
-    await repositorio.salvar({
-        id: 1,
-        assinante: 'Ana',
-        jogo: 'Celeste',
-        dias: 5,
-        situacao: 'reservado'
+    expect(resultado).toHaveLength(1)
+  })
+
+  test('deve buscar aluguel pelo ID', async () => {
+    const aluguel = await sistema.cadastrar({
+      cliente: 'Pedro',
+      imovel: 'Casa 03',
+      valor: 900
     })
 
-    expect(await repositorio.remover(1)).toBe(true)
+    const resultado = await sistema.buscar(aluguel.id)
+
+    expect(resultado.cliente).toBe('Pedro')
+  })
+
+  test('deve excluir um aluguel', async () => {
+    const aluguel = await sistema.cadastrar({
+      cliente: 'Ana',
+      imovel: 'Apartamento 02',
+      valor: 1100
+    })
+
+    const resultado = await sistema.excluir(aluguel.id)
+
+    expect(resultado).toBe(true)
+    expect(await sistema.listar()).toHaveLength(0)
+  })
+
+  test('não deve cadastrar sem cliente ou imóvel', async () => {
+    await expect(
+      sistema.cadastrar({ cliente: '', imovel: '' })
+    ).rejects.toThrow('Cliente e imóvel são obrigatórios')
+  })
 })

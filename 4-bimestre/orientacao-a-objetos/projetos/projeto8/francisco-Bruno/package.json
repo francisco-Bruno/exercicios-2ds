@@ -1,16 +1,12 @@
 {
-  "name": "projeto8-francisco-bruno",
+  "name": "locadora-alugueis",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sistema de gerenciamento de aluguéis",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
-    "jest": "^30.5.2"
+    "jest": "^30.0.0"
   }
 }
